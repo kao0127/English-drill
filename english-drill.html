@@ -8,8 +8,7 @@
 <style>
 :root{--bg:#f3f1ec;--surface:#fffdf9;--ink:#1d2a26;--sub:#66726d;--line:#d9d5cb;--accent:#1f6f5c;--accent-ink:#fff;--ok:#1f7a45;--ng:#b3372f;--okbg:#e3f3e8;--ngbg:#f8e4e1;
 box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#141a18;--surface:#1c2421;--ink:#eaf0ed;--sub:#93a19b;--line:#33403b;--accent:#5fc4a8;--accent-ink:#0d1a16;--ok:#7bd59d;--ng:#f0948c;--okbg:#1c3327;--ngbg:#3a2220}}
-:root[data-theme="dark"]{--bg:#141a18;--surface:#1c2421;--ink:#eaf0ed;--sub:#93a19b;--line:#33403b;--accent:#5fc4a8;--accent-ink:#0d1a16;--ok:#7bd59d;--ng:#f0948c;--okbg:#1c3327;--ngbg:#3a2220}
+@media (prefers-color-scheme:dark){:root{--bg:#141a18;--surface:#1c2421;--ink:#eaf0ed;--sub:#93a19b;--line:#33403b;--accent:#5fc4a8;--accent-ink:#0d1a16;--ok:#7bd59d;--ng:#f0948c;--okbg:#1c3327;--ngbg:#3a2220}}
 html{scroll-padding-top:env(safe-area-inset-top,0px)}
 *{box-sizing:border-box}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"Hiragino Sans","Yu Gothic UI","Noto Sans JP",system-ui,sans-serif;line-height:1.6}
@@ -17,9 +16,8 @@ main{max-width:560px;margin:0 auto;padding:20px 16px 48px}
 h1{font-size:1.25rem;margin:8px 0 18px;letter-spacing:.04em}
 .card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:20px;margin-bottom:16px}
 label{display:block;font-size:.9rem;color:var(--sub);margin-bottom:6px}
-input[type=number],input[type=text],textarea{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
-input:focus,textarea:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
-textarea{min-height:150px;font-family:ui-monospace,Consolas,monospace;font-size:.9rem}
+input[type=number],input[type=text]{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px}
+input:focus,button:focus-visible{outline:3px solid var(--accent);outline-offset:1px}
 button{font:inherit;font-weight:600;cursor:pointer;border-radius:10px;border:1.5px solid var(--accent);padding:12px 18px;background:var(--accent);color:var(--accent-ink)}
 button.ghost{background:transparent;color:var(--accent)}
 button.big{width:100%;font-size:1.1rem;padding:14px}
@@ -31,6 +29,8 @@ button.big{width:100%;font-size:1.1rem;padding:14px}
 .q{font-size:1.9rem;font-weight:700;text-align:center;margin:18px 0 22px;word-break:break-word}
 .fb{margin:14px 0;padding:12px 14px;border-radius:10px;font-weight:600}
 .fb.ok{background:var(--okbg);color:var(--ok)}
+.fb.ng{background:var(--ngbg);color:var(--ng)}
+.fb .ans{display:block;font-size:1.25rem;margin-top:2px;color:var(--ink)}
 .inrow{display:flex;gap:8px}
 .hint{margin:10px 0 0;padding-left:1.2em}
 .ex{margin:10px 0 0;padding:10px;background:var(--bg);border:1px solid var(--line);border-radius:10px;overflow-x:auto;white-space:pre;font-family:ui-monospace,Consolas,monospace}
@@ -38,8 +38,6 @@ button.big{width:100%;font-size:1.1rem;padding:14px}
 select{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:10px}
 #mic{flex:0 0 auto;white-space:nowrap;padding:10px 14px}
 #mic.on{background:var(--ng);border-color:var(--ng);color:#fff}
-.fb.ng{background:var(--ngbg);color:var(--ng)}
-.fb .ans{display:block;font-size:1.25rem;margin-top:2px;color:var(--ink)}
 .score{font-size:3rem;font-weight:700;text-align:center;margin:6px 0}
 .center{text-align:center}
 .small{font-size:.85rem;color:var(--sub)}
@@ -48,14 +46,19 @@ select{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var
 </head>
 <body>
 <main>
-<h1>英語ドリル(日本語 → 英語)</h1>
+<h1>英語ドリル (日本語 → 英語)</h1>
 
 <section id="setup">
   <div class="card">
     <label for="n">出題数</label>
-    <input type="number" id="n" min="1" value="10" inputmode="numeric">
-    <label for="range">出題範囲</label>
+    <input type="number" id="n" min="1" value="5" inputmode="numeric">
+    <label>出題範囲</label>
+    <div class="row" style="margin-bottom:10px">
+      <button type="button" id="m-level">カテゴリ</button>
+      <button type="button" class="ghost" id="m-date">日付</button>
+    </div>
     <select id="range"></select>
+    <div id="lvs" class="hide"></div>
     <p class="small" id="count"></p>
     <label for="acc">発音</label>
     <select id="acc"><option value="us">アメリカ</option><option value="uk">イギリス</option></select>
@@ -64,7 +67,6 @@ select{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var
   </div>
   <div class="card">
     <label for="file">問題データ</label>
-    <textarea id="data" class="hide" aria-hidden="true"></textarea>
     <div class="row">
       <button class="ghost" id="file">CSVを読み込む</button>
       <button class="ghost" id="clear">全データを削除</button>
@@ -73,12 +75,12 @@ select{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var
     <input type="file" id="fi" accept=".csv,.txt,.tsv,text/plain,text/csv" class="hide">
     <ul class="small hint">
       <li>日本語が同じ行は更新、新しい行は追加</li>
-      <li>3列目以降は省略可(発音記号、#グループ)</li>
+      <li>3列目以降は省略可(発音記号、#カテゴリ、#日付)</li>
       <li>正解が複数:英語を「 / 」で区切る</li>
       <li>英語にカンマがある場合:" で囲む</li>
     </ul>
-    <p class="small" style="margin:12px 0 0">CSVの例(登録済みのデータではありません)</p>
-    <pre class="small ex">犬,dog
+    <p class="small" style="margin:12px 0 0">CSVの記述例</p>
+    <pre class="small ex">おはようございます。,Good morning.,#初級
 酸っぱい！,It's tart! / It's sour!,#2026-11-21
 元気です,"Good, thank you.",[ɡʊd θæŋk juː]</pre>
   </div>
@@ -112,9 +114,25 @@ select{width:100%;font:inherit;font-size:1.05rem;color:var(--ink);background:var
 </main>
 
 <script>
-const SAMPLE="りんご,apple\n犬,dog\n猫,cat\n本,book\n水,water\n学校,school\n友達,friend\n電車,train\n朝食,breakfast\n図書館,library\n天気,weather\n医者,doctor\n";
+const SAMPLE=[
+"おはようございます。,Good morning.,#初級,#2026-11-06",
+"ありがとう！,Thank you!,#初級,#2026-11-06",
+"いくらですか？,How much is it?,#初級,#2026-11-06",
+"トイレはどこですか？,Where is the restroom? / Where is the bathroom?,#初級,#2026-11-20",
+"今日は雨です。,It's raining today.,#初級,#2026-11-20",
+"電車が遅れているみたいです。,The train seems to be delayed.,#中級,#2026-11-06",
+"試着してもいいですか？,Can I try this on?,#中級,#2026-11-06",
+"道に迷ってしまいました。,I'm lost. / I got lost.,#中級,#2026-11-06",
+"おすすめは何ですか？,What do you recommend?,#中級,#2026-11-20",
+"少し遅れそうです。,I'm going to be a little late.,#中級,#2026-11-20",
+"それは一石二鳥だね。,That's killing two birds with one stone.,#上級,#2026-11-06",
+"時間がたつのは早いものですね。,Time flies.,#上級,#2026-11-06",
+"習うより慣れろ。,Practice makes perfect.,#上級,#2026-11-20",
+"ひとまず様子を見よう。,Let's wait and see.,#上級,#2026-11-20",
+"それとこれとは話が別だ。,That's a different matter. / That's another story.,#上級,#2026-11-20"
+].join("\n");
 const $=id=>document.getElementById(id);
-let words=[],S=null;
+let words=[],raw="",S=null;
 
 function store(k,v){try{if(v===undefined)return localStorage.getItem(k);localStorage.setItem(k,v)}catch(e){return null}}
 function fields(l,d){
@@ -136,42 +154,72 @@ function parse(t){
     const f=fields(l,d);
     if(f.length<2)return;
     const jp=f.shift().trim();
-    let g="",ip="";
+    let tg=[],ip="";
     while(f.length>1){
       const x=f[f.length-1].trim();
       if(!x){}
-      else if(!g&&/^#./.test(x))g=x.slice(1).trim();
+      else if(/^#./.test(x))tg.unshift(x.slice(1).trim());
       else if(!ip&&/^(\/.+\/|\[.+\])$/.test(x))ip=x;
       else break;
       f.pop();
     }
-    if(d==="\t"&&!g&&f.length>=2)g=f.pop().trim();
+    if(d==="\t"&&!tg.length&&f.length>=2)tg=[f.pop().trim()];
     const en=f.join(d).trim().replace(/[,，]+$/,"").trim();
     if(i===0&&jp==="日本語")return;
-    if(jp&&en)out.push({jp,en,g,p:ip});
+    if(jp&&en)out.push({jp,en,tg,p:ip});
   });
   return out;
 }
 function load(){
-  const sv=store("td_data");$("data").value=sv===null?SAMPLE:sv;
+  const sv=store("td_data");raw=sv===null?SAMPLE:sv;
   const n=store("td_n");if(n)$("n").value=n;
-  words=parse($("data").value);refresh();
+  words=parse(raw);refresh();
 }
-function groups(){const g=[];words.forEach(w=>{if(w.g&&!g.includes(w.g))g.push(w.g)});return g.sort((a,b)=>b.localeCompare(a,"ja",{numeric:true}))}
+const isDate=s=>/^\d{4}-\d{2}-\d{2}$/.test(s);
+let mode=store("td_mode")==="date"?"date":"level";
+function tagsOf(kind){
+  const g=[];
+  words.forEach(w=>w.tg.forEach(x=>{if(isDate(x)===(kind==="date")&&!g.includes(x))g.push(x)}));
+  return kind==="date"?g.sort((a,b)=>b.localeCompare(a)):g;
+}
+function offLevels(){try{return JSON.parse(store("td_lv_off")||"[]")}catch(_){return []}}
 function pool(){
+  if(mode==="level"){
+    const off=offLevels();
+    return words.filter(w=>w.tg.some(x=>!isDate(x)&&!off.includes(x)));
+  }
   const v=$("range").value;if(!v||v==="all")return words;
-  const g=v.slice(2);
-  return words.filter(w=>w.g===g);
+  return words.filter(w=>w.tg.includes(v.slice(2)));
+}
+function count(){$("count").textContent="登録問題数:"+words.length+"問 / 出題範囲:"+pool().length+"問"}
+function setMode(m){
+  mode=m;store("td_mode",m);
+  $("m-date").classList.toggle("ghost",m!=="date");
+  $("m-level").classList.toggle("ghost",m!=="level");
+  $("range").classList.toggle("hide",m!=="date");
+  $("lvs").classList.toggle("hide",m!=="level");
+  count();
 }
 function refresh(){
-  const sel=$("range"),cur=sel.value||store("td_range")||"all",gs=groups();
-  const c=g=>words.filter(w=>w.g===g).length;
+  const sel=$("range"),cur=sel.value||store("td_range")||"all";
+  const c=t=>words.filter(w=>w.tg.includes(t)).length;
   sel.innerHTML="";
   const add=(v,t)=>{const o=document.createElement("option");o.value=v;o.textContent=t;sel.appendChild(o)};
   add("all","すべて ("+words.length+"問)");
-  gs.forEach(g=>add("g:"+g,g+" ("+c(g)+"問)"));
+  tagsOf("date").forEach(g=>add("g:"+g,g+" ("+c(g)+"問)"));
   sel.value=[...sel.options].some(o=>o.value===cur)?cur:"all";
-  $("count").textContent="登録問題数:"+words.length+"問 / 出題範囲:"+pool().length+"問";
+  const box=$("lvs"),ls=tagsOf("level"),off=offLevels();
+  box.innerHTML="";
+  if(!ls.length){const p=document.createElement("p");p.className="small";p.textContent="カテゴリがありません";box.appendChild(p)}
+  ls.forEach(l=>{
+    const lab=document.createElement("label");
+    lab.style.cssText="display:flex;gap:10px;align-items:center;margin:0;padding:8px 0;color:var(--ink);font-size:1.05rem;cursor:pointer";
+    const cb=document.createElement("input");cb.type="checkbox";cb.checked=!off.includes(l);cb.style.cssText="width:18px;height:18px;margin:0";
+    cb.onchange=()=>{const o=offLevels().filter(x=>x!==l);if(!cb.checked)o.push(l);store("td_lv_off",JSON.stringify(o));count()};
+    const t=document.createElement("span");t.textContent=l+" ("+c(l)+"問)";
+    lab.appendChild(cb);lab.appendChild(t);box.appendChild(lab);
+  });
+  setMode(mode);
 }
 function show(id){["setup","quiz","result"].forEach(s=>$(s).classList.toggle("hide",s!==id))}
 function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -179,7 +227,7 @@ const norm=s=>s.normalize("NFKC").toLowerCase().replace(/[’‘`']/g,"").replac
 const accepted=en=>en.split(/\s+[\/／]\s+|\s*[|｜]\s*/).map(norm).filter(Boolean);
 
 const qf=s=>/[",\t\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;
-function toLine(w){return [qf(w.jp),qf(w.en)].concat(w.p?[w.p]:[],w.g?["#"+w.g]:[]).join(",")}
+function toLine(w){return [qf(w.jp),qf(w.en)].concat(w.p?[w.p]:[],(w.tg||[]).map(x=>"#"+x)).join(",")}
 let D={us:null,uk:null},dictP=null;
 function getJson(f){return fetch(f).then(r=>{if(!r.ok)throw 0;return r.json()}).catch(()=>null)}
 function loadDicts(){
@@ -203,14 +251,14 @@ function ipaFor(en){
   return r+(r&&fb?" (*=米)":"");
 }
 function doSave(note){
-  const w=parse($("data").value);
+  const w=parse(raw);
   if(!w.length){$("msg").textContent="読み取れる行がありません。";return}
-  words=w;store("td_data",$("data").value);refresh();
+  words=w;store("td_data",raw);refresh();
   $("msg").textContent=w.length+"問を保存しました。"+(note||"");
 }
 $("clear").onclick=()=>{
   if(!confirm("すべての問題データを削除しますか?"))return;
-  $("data").value="";words=[];store("td_data","");refresh();$("msg").textContent="削除しました。";
+  raw="";words=[];store("td_data","");refresh();$("msg").textContent="削除しました。";
 };
 $("file").onclick=()=>$("fi").click();
 $("fi").onchange=e=>{
@@ -219,14 +267,14 @@ $("fi").onchange=e=>{
     let t;
     try{t=new TextDecoder("utf-8",{fatal:true}).decode(b)}catch(_){t=new TextDecoder("shift_jis").decode(b)}
     t=t.replace(/^\uFEFF/,"");
-    const cur=parse($("data").value),idx=new Map(cur.map((w,i)=>[w.jp,i]));
+    const cur=parse(raw),idx=new Map(cur.map((w,i)=>[w.jp,i]));
     let add=0,upd=0;
     parse(t).forEach(w=>{
       const k=idx.get(w.jp);
       if(k===undefined){idx.set(w.jp,cur.length);cur.push(w);add++}
-      else{const o=cur[k],ch=o.en!==w.en;if(ch)upd++;o.p=w.p||(ch?"":o.p);o.en=w.en;o.g=w.g||o.g}
+      else{const o=cur[k],ch=o.en!==w.en;if(ch)upd++;o.p=w.p||(ch?"":o.p);o.en=w.en;o.tg=w.tg.length?w.tg:o.tg}
     });
-    $("data").value=cur.map(toLine).join("\n");
+    raw=cur.map(toLine).join("\n");
     doSave("(CSV:追加"+add+"件・更新"+upd+"件)");
   });
   e.target.value="";
@@ -234,8 +282,8 @@ $("fi").onchange=e=>{
 
 $("start").onclick=async()=>{
   if(!words.length){alert("先にCSVを読み込んでください。");return}
-  let n=parseInt($("n").value,10);if(!(n>0))n=10;store("td_n",String(n));
-  const pl=pool();if(!pl.length){$("msg").textContent="この範囲に問題がありません。";return}
+  let n=parseInt($("n").value,10);if(!(n>0))n=5;store("td_n",String(n));
+  const pl=pool();if(!pl.length){alert("出題範囲を選択してください。");return}
   n=Math.min(n,pl.length);
   await loadDicts();
   S={total:n,score:0,queue:shuffle(pl).slice(0,n),wrong:[],round:0,main:true,done:0,len:n,cur:null,answered:false};
@@ -334,7 +382,9 @@ function speak(t){
   try{speechSynthesis.cancel();[].concat(t).forEach(x=>{const u=new SpeechSynthesisUtterance(x);u.lang=$("acc").value==="uk"?"en-GB":"en-US";u.rate=0.9;speechSynthesis.speak(u)})}catch(_){}
 }
 $("spk").onclick=()=>speak(ansText());
-$("range").onchange=()=>{store("td_range",$("range").value);refresh()};
+$("range").onchange=()=>{store("td_range",$("range").value);count()};
+$("m-date").onclick=()=>setMode("date");
+$("m-level").onclick=()=>setMode("level");
 if(!window.speechSynthesis)$("autolbl").classList.add("hide");
 $("auto").checked=store("td_tts")!=="0";
 $("auto").onchange=()=>store("td_tts",$("auto").checked?"1":"0");
